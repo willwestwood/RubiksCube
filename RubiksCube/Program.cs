@@ -1,4 +1,6 @@
-﻿namespace RubiksCube
+﻿using System;
+
+namespace RubiksCube
 {
     class MainClass
     {
@@ -31,8 +33,6 @@
                 cube.Rotate(Position.Right, Direction.Anticlockwise);
                 cube.Rotate(Position.Up, Direction.Anticlockwise);
             }
-
-            cube.Print();
         }
     }
 }

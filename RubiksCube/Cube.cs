@@ -15,9 +15,9 @@ namespace RubiksCube
             }
         }
 
-        public void Rotate(Position position, Direction direction)
+        public void Rotate(Position position, Direction direction, int numRows = 1)
         {
-            Console.WriteLine("Rotating cube (Position: " + position.ToString() + ", Direction: " + direction.ToString() + ")");
+            Console.WriteLine("Rotating cube (Position: " + position.ToString() + ", Direction: " + direction.ToString() + ", Rows: " + numRows.ToString() + ")");
 
             // for cases front or back, spin so that we can simply use the right hand direction
             Position originalPosition = position;
@@ -44,23 +44,23 @@ namespace RubiksCube
             {
                 case Direction.Clockwise:
                 {
-                    Colour[] lastFaceRow = Faces[(int)lastSurroundingPosition].GetEdgeBlock(position);
+                    Colour[] lastFaceRow = Faces[(int)lastSurroundingPosition].GetRows(position, numRows);
                     for (int i = surroundingPositions.Length - 2; i >= 0; i--)
                     {
                         var surroundingPosition = surroundingPositions[i];
-                        Faces[(int)surroundingPositions[i + 1]].SetEdgeBlock(Faces[(int)surroundingPosition], position);
+                        Faces[(int)surroundingPositions[i + 1]].SetRows(Faces[(int)surroundingPosition], position, numRows);
                     }
-                    Faces[(int)firstSurroundingPosition].SetEdgeBlock(lastFaceRow, position);
+                    Faces[(int)firstSurroundingPosition].SetRows(lastFaceRow, position, numRows);
                     break;
                 }
                 case Direction.Anticlockwise:
                 {
-                    Colour[] firstFaceRow = Faces[(int)surroundingPositions[0]].GetEdgeBlock(position);
+                    Colour[] firstFaceRow = Faces[(int)surroundingPositions[0]].GetRows(position, numRows);
                     for (int i = 1; i < surroundingPositions.Length; i++)
                     {
-                        Faces[(int)surroundingPositions[i - 1]].SetEdgeBlock(Faces[(int)surroundingPositions[i]], position);
+                        Faces[(int)surroundingPositions[i - 1]].SetRows(Faces[(int)surroundingPositions[i]], position, numRows);
                     }
-                    Faces[(int)surroundingPositions[surroundingPositions.Length - 1]].SetEdgeBlock(firstFaceRow, position);
+                    Faces[(int)surroundingPositions[surroundingPositions.Length - 1]].SetRows(firstFaceRow, position, numRows);
                     break;
                 }
             }
@@ -79,7 +79,7 @@ namespace RubiksCube
 
         public void Spin(Direction direction)
         {
-            Console.WriteLine("Spinning cube: " + direction.ToString() + ") around the Y axis");
+            Console.WriteLine("Spinning cube (" + direction.ToString() + ") around the Y axis");
 
             var surroundingFaces = Utils.GetSurroundingPositions(Position.Up);            
             switch (direction)

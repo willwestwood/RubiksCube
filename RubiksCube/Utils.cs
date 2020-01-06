@@ -1,4 +1,6 @@
-﻿namespace RubiksCube
+﻿using System.Linq;
+
+namespace RubiksCube
 {
     public static partial class Utils
     {
@@ -74,6 +76,29 @@
             }
 
             return ret;
+        }
+
+        public static void ReverseArraySubSections<T>(ref T[] arr, int sectionSize)
+        {
+            T[] newArr = new T[0];
+            for(int i = 0; i < sectionSize; i++)
+            {
+                var subSection = arr.Skip(i * sectionSize).Take(sectionSize).ToArray();
+                subSection = subSection.Reverse().ToArray();
+                newArr = newArr.Concat(subSection).ToArray();
+            }
+            arr = newArr;
+        }
+
+        public static void ReverseArrayInSections<T>(ref T[] arr, int sectionSize)
+        {
+            T[] newArr = new T[0];
+            for (int i = 0; i < sectionSize; i++)
+            {
+                var subSection = arr.Skip(i * sectionSize).Take(sectionSize).ToArray();
+                newArr = subSection.Concat(newArr).ToArray();
+            }
+            arr = newArr;
         }
     }
 }
