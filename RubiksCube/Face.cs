@@ -51,19 +51,19 @@ namespace RubiksCube
             Colours = Utils.Matrix2DToArray(matrix);
         }
 
-        public Colour[] GetRows(Position position, int n = 1)
+        public Colour[] GetRows(Position side, int n = 1)
         {
             // back face orientation correction
             if (Position == Position.Back)
             {
-                if (position == Position.Right)
-                    position = Position.Left;
-                else if (position == Position.Left)
-                    position = Position.Right;
+                if (side == Position.Right)
+                    side = Position.Left;
+                else if (side == Position.Left)
+                    side = Position.Right;
             }
 
             Colour[] ret;
-            switch (position)
+            switch (side)
             {
                 case Position.Up:
                     ret = Colours.Take(Size * n).ToArray();
@@ -77,22 +77,22 @@ namespace RubiksCube
                         ret = ret.Concat(Colours.Where((x, j) => (j - i) % Size == 0).ToArray()).ToArray();
                     break;
                 case Position.Right:
-                    ret = new Colour[] { };
+                    ret = new Colour[] {};
                     for (int i = 0; i < n; i++)
                         ret = ret.Concat(Colours.Where((x, j) => (j + i + 1) % Size == 0).ToArray()).ToArray();
                     break;
                 default:
-                    throw new System.Exception("Cannot get face edge block from position: " + position.ToString());
+                    throw new System.Exception("Cannot get row from side: " + side.ToString());
             }
 
             // back face orientation correction
-            if (Position == Position.Back && (position == Position.Left || position == Position.Right))
+            if (Position == Position.Back && (side == Position.Left || side == Position.Right))
                 Utils.ReverseArraySubSections(ref ret, Size);
 
             return ret;
         }
 
-        public void SetRows(Colour[] colours, Position position, int n = 1)
+        public void SetRows(Colour[] colours, Position side, int n = 1)
         {
             if (colours.Length != Size * n)
                 throw new System.Exception("Invalid number of colours");
@@ -100,17 +100,17 @@ namespace RubiksCube
             // back face orientation correction
             if (Position == Position.Back)
             {
-                if (position == Position.Right)
-                    position = Position.Left;
-                else if (position == Position.Left)
-                    position = Position.Right;
+                if (side == Position.Right)
+                    side = Position.Left;
+                else if (side == Position.Left)
+                    side = Position.Right;
 
-                if (position == Position.Right || position == Position.Left)
+                if (side == Position.Right || side == Position.Left)
                     Utils.ReverseArraySubSections(ref colours, Size);
             }
 
             int[] idxs = new int[0];
-            switch (position)
+            switch (side)
             {
                 case Position.Up:
                     idxs = Enumerable.Range(0, Size * n).ToArray();
@@ -127,16 +127,16 @@ namespace RubiksCube
                         idxs = idxs.Concat(Enumerable.Range(0, Size * Size).Where(x => (x + i + 1) % Size == 0).ToArray()).ToArray();
                     break;
                 default:
-                    throw new System.Exception("Cannot get face edge block from position: " + position.ToString());
+                    throw new System.Exception("Cannot get row from side: " + side.ToString());
             }
 
             for(int i = 0; i < colours.Length; i++)
                 Colours[idxs[i]] = colours[i];
         }
 
-        public void SetRows(Face face, Position position, int n = 1)
+        public void SetRows(Face face, Position side, int n = 1)
         {
-            SetRows(face.GetRows(position, n), position, n);
+            SetRows(face.GetRows(side, n), side, n);
         }
 
         public void SetColours(Face face)

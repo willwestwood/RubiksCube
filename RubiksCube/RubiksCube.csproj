@@ -35,7 +35,6 @@
     <Compile Include="Cube.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Colour.cs" />
-    <Compile Include="Config.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="Face.cs" />
     <Compile Include="Utils.cs" />
