@@ -28,6 +28,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="SharpGL">
+      <HintPath>..\packages\SharpGL.3.1.1\lib\net472\SharpGL.dll</HintPath>
+    </Reference>
+    <Reference Include="websocket-sharp">
+      <HintPath>..\packages\WebSocketSharp-NonPreRelease.1.0.0\lib\net35\websocket-sharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -38,6 +44,12 @@
     <Compile Include="Direction.cs" />
     <Compile Include="Face.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="Solver.cs" />
+    <Compile Include="Instruction.cs" />
+    <Compile Include="WebSocketService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

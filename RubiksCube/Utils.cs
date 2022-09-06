@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace RubiksCube
 {
@@ -99,6 +100,29 @@ namespace RubiksCube
                 newArr = subSection.Concat(newArr).ToArray();
             }
             arr = newArr;
+        }
+
+        public static T RandomEnum<T>()
+        {
+            Array values = Enum.GetValues(typeof(T));
+            Random random = new Random();
+            return (T)values.GetValue(random.Next(values.Length));
+        }
+
+        public static T RandomEnum<T>(T except)
+        {
+            while (true)
+            {
+                T ret = RandomEnum<T>();
+                if (!ret.Equals(except))
+                    return ret;
+            }
+        }
+
+        public static int RandomNumber(int min, int max)
+        {
+            Random random = new Random();
+            return random.Next(min, max);
         }
     }
 }
