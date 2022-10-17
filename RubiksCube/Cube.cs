@@ -10,7 +10,10 @@ namespace RubiksCube
             Size = size;
 
             foreach (Position position in Enum.GetValues(typeof(Position)))
-                Faces[position] = new Face(size, position);
+            {
+                if (position != Position.Unknown)
+                    Faces[position] = new Face(size, position);
+            }
         }
 
         public void Rotate(Position position, Direction direction, int numRows = 1)
@@ -22,11 +25,11 @@ namespace RubiksCube
             switch(position)
             {
                 case Position.Front:
-                    Spin(Direction.Anticlockwise);
+                    Spin(Position.Right);
                     position = Position.Right;
                     break;
                 case Position.Back:
-                    Spin(Direction.Clockwise);
+                    Spin(Position.Left);
                     position = Position.Right;
                     break;
             }
@@ -35,7 +38,7 @@ namespace RubiksCube
             Faces[position].Rotate(direction);
 
             // then deal with the edges
-            var surroundingPositions = Utils.GetSurroundingPositions(position);
+            var surroundingPositions = Utils.GetAdjacentPositionsClockwise(position);
             Position firstSurroundingPosition = surroundingPositions[0];
             Position lastSurroundingPosition = surroundingPositions[surroundingPositions.Length - 1];
             switch (direction)
@@ -64,43 +67,62 @@ namespace RubiksCube
             switch (originalPosition)
             {
                 case Position.Front:
-                    Spin(Direction.Clockwise);
+                    Spin(Position.Right);
                     break;
                 case Position.Back:
-                    Spin(Direction.Anticlockwise);
+                    Spin(Position.Left);
                     break;
             }
         }
 
-        public void Spin(Direction direction)
+        public void Spin(Position position)
         {
-            Console.WriteLine("Spinning cube (" + direction.ToString() + ") around the Y axis");
+            Console.WriteLine("Spinning cube: " + position.ToString());
 
-            var surroundingFaces = Utils.GetSurroundingPositions(Position.Up);            
-            switch (direction)
+            Position adjFace = Position.Unknown;
+            switch (position)
             {
-                case Direction.Clockwise:
-                    {
-                        var lastSurroundingFace = Faces[surroundingFaces[surroundingFaces.Length - 1]].Clone();
-                        for(int i = surroundingFaces.Length - 2; i >= 0; i--)
-                            Faces[surroundingFaces[i + 1]].SetColours(Faces[surroundingFaces[i]]);
-
-                        Faces[surroundingFaces[0]].SetColours(lastSurroundingFace);
-                        break;
-                    }
-                case Direction.Anticlockwise:
-                    {
-                        var firstSurroundingFace = Faces[surroundingFaces[0]].Clone();
-                        for (int i = 1; i < surroundingFaces.Length; i++)
-                            Faces[surroundingFaces[i - 1]].SetColours(Faces[surroundingFaces[i]]);
-
-                        Faces[surroundingFaces[surroundingFaces.Length - 1]].SetColours(firstSurroundingFace);
-                        break;
-                    }
+                case Position.Right:
+                    adjFace = Position.Up;
+                    break;
+                case Position.Left:
+                    adjFace = Position.Down;
+                    break;
+                case Position.Up:
+                    adjFace = Position.Right;
+                    break;
+                case Position.Down:
+                    adjFace = Position.Left;
+                    break;
+                case Position.Front:
+                case Position.Back:
+                    adjFace = position;
+                    break;
+                default:
+                    throw new Exception("Cannot spin: " + position.ToString());
             }
 
-            Faces[Position.Up].Rotate(direction);
-            Faces[Position.Down].Rotate(Utils.GetOpposite(direction));
+            var surroundingFaces = Utils.GetAdjacentPositionsClockwise(adjFace);
+
+            var lastSurroundingFace = Faces[surroundingFaces[surroundingFaces.Length - 1]].Clone();
+            for (int i = surroundingFaces.Length - 2; i >= 0; i--)
+                Faces[surroundingFaces[i + 1]].SetColours(Faces[surroundingFaces[i]]);
+
+            Faces[surroundingFaces[0]].SetColours(lastSurroundingFace);
+
+            Faces[adjFace].Rotate(Direction.Clockwise);
+            Faces[Utils.GetOpposite(adjFace)].Rotate(Utils.GetOpposite(Direction.Clockwise));
+        }
+
+        public void Scramble()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                int rows = Utils.RandomNumber(1, Size);
+                Position position = Utils.RandomEnum<Position>(Position.Unknown);
+                Direction direction = Utils.RandomEnum<Direction>(Direction.Unknown);
+                Rotate(position, direction, rows);
+            }
         }
 
         public void Print()

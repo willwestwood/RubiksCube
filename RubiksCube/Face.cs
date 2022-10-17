@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace RubiksCube
 {
+    using Coordinate = Tuple<int, int>;
+
     public class Face
     {
         public Face(int size, Position position)
@@ -42,6 +45,43 @@ namespace RubiksCube
             Face clone = new Face(Size, Position);
             clone.Colours = (Colour[])Colours.Clone();
             return clone;
+        }
+
+        public Colour GetSquare(Coordinate coordinate)
+        {
+            if (coordinate.Item1 > Size - 1 || coordinate.Item2 > Size - 1)
+                throw new Exception("Coordinate out of range");
+
+            return Colours[coordinate.Item1 + (coordinate.Item2 * Size)];
+        }
+
+        public bool IsCorner(Coordinate coordinate)
+        {
+            int col = coordinate.Item1;
+            int row = coordinate.Item2;
+
+            if ((col > 0 && col < (Size - 1))
+                || (row > 0 && row < (Size - 1)))
+                return false;
+
+            return true;
+        }
+
+        public bool IsEdge(Coordinate coordinate)
+        {
+            if (!IsCorner(coordinate))
+            {
+                int col = coordinate.Item1;
+                int row = coordinate.Item2;
+
+                if (col == 0
+                    || col == Size - 1
+                    || row == 0
+                    || row == Size - 1)
+                    return true;
+            }
+
+            return false;
         }
 
         public void Rotate(Direction direction)
@@ -142,6 +182,11 @@ namespace RubiksCube
         public void SetColours(Face face)
         {
             Colours = face.Colours;
+        }
+
+        public Colour[,] GetColours()
+        {
+            return Utils.ArrayToMatrix2D(Colours, Size);
         }
 
         public int Size { get; }
